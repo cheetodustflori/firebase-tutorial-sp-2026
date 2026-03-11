@@ -1,8 +1,9 @@
 "use client";
 import ListItem from "./listItem";
-import { useEffect, useState } from "react";
-import { nanoid } from "nanoid";
+import { useState } from "react";
+import { nanoid } from "nanoid"; // this is just for generating random ids
 
+// Initial list of To-Do tasks -- we will use the Firebase later!
 export default function Todo() {
   const tasks = [
     {
@@ -42,9 +43,10 @@ export default function Todo() {
     },
   ];
 
-  const [myTasks, setTasks] = useState(tasks);
-  const [input, setInput] = useState("");
+  const [myTasks, setTasks] = useState(tasks); // array of our tasks
+  const [input, setInput] = useState(""); // input for adding a to-do item
 
+  // FUNCTION: when you click "add to-do", it calls this function
   function handleAddTodo() {
     const newTask = { id: `todo-${nanoid()}`, task: input, status: false };
     if (input.length > 0) {
@@ -53,16 +55,7 @@ export default function Todo() {
     }
   }
 
-  function handleOnClick(id) {
-    const updatedTasks = myTasks.map((task) => {
-      if (id == task.id) {
-        return { ...task, status: !task.status };
-      }
-      return task;
-    });
-    setTasks(updatedTasks);
-  }
-
+  // FUNCTION: when you click on a TASK, it will open the edit + delete menu
   function handleTaskClick(id) {
     const updatedTasks = myTasks.map((task) => {
       if (id == task.id) {
@@ -73,10 +66,24 @@ export default function Todo() {
     setTasks(updatedTasks);
   }
 
+  // FUNCTION: when you click the "completion circle", it will mark a task as complete/incomplete
+  function handleOnClick(id) {
+    const updatedTasks = myTasks.map((task) => {
+      if (id == task.id) {
+        return { ...task, status: !task.status };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  }
+
+  // FUNCTION: when you click the DELETE button for a task, it deletes the task
   function handleDelete(id) {
     const remainingTasks = myTasks.filter((task) => id !== task.id);
     setTasks(remainingTasks);
   }
+
+  // FUNCTION: when you click the EDIT button for a task, it displays a text input area to edit text
 
   function handleEditClick(id) {
     const updatedTasks = myTasks.map((task) => {
@@ -88,6 +95,7 @@ export default function Todo() {
     setTasks(updatedTasks);
   }
 
+  // FUNCTION: when you have the edit menu open and click the SUBMIT button, it will update your task
   function handleEditSubmit(id, newTaskText) {
     const updatedTasks = myTasks.map((task) => {
       if (id == task.id) {
@@ -99,12 +107,17 @@ export default function Todo() {
     setTasks(updatedTasks);
   }
 
+
+  // ----------------------------- HTML CONTENT THAT YOU WILL RETURN ----------------------------
   return (
     <div className="flex flex-col gap-5 rounded-lg w-100 h-150 overflow-y-scroll items-center shadow-xl/30 p-10 bg-[#F487B6]">
       <h1 className="text-white font-bold text-2xl">💗 WiCS To-Do List</h1>
 
+      {/* LIST VIEW OF TO-DOS */}
       <ul className="flex flex-col text-pink-700 gap-2 font-bold h-100 overflow-y-scroll">
         {myTasks.map((item) => (
+          // we are iterating through all of our tasks in our array and creating a ListItem component for each one 
+          // that's populated with the proper information and functions
           <ListItem
             key={item.id}
             id={item.id}
@@ -121,6 +134,7 @@ export default function Todo() {
         ))}
       </ul>
 
+        {/* ADD TO DO SECTION */}
       <div className="flex gap-5">
         <input
           type="text"
