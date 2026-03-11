@@ -3,7 +3,7 @@ import ListItem from "./listItem";
 import { useState } from "react";
 import { nanoid } from "nanoid"; // this is just for generating random ids
 
-// Initial list of To-Do tasks -- we will use the Firebase later!
+// Initial list of To-Do tasks -- hmm.... these are all hardcoded... maybe we can try retreiving this from a database? 
 export default function Todo() {
   const tasks = [
     {
@@ -43,8 +43,12 @@ export default function Todo() {
     },
   ];
 
+  // ----------------------------- STATES ----------------------------
+
   const [myTasks, setTasks] = useState(tasks); // array of our tasks
   const [input, setInput] = useState(""); // input for adding a to-do item
+
+  // ----------------------------- A BUNCH OF FUNCTIONS  ----------------------------
 
   // FUNCTION: when you click "add to-do", it calls this function
   function handleAddTodo() {
