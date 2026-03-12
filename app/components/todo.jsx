@@ -82,7 +82,7 @@ export default function Todo() {
   //   }
   // }
 
-  // NEW FUNCTION
+  // POST API: NEW FUNCTION
   const postData = async () => {
     try {
       const docRef = await addDoc(collection(db, 'tasks'), {
@@ -123,7 +123,7 @@ export default function Todo() {
   //   setTasks(updatedTasks);
   // }
 
-  // NEW FUNCTION
+  // UPDATE API: NEW FUNCTION
   async function handleOnClick(id, newTaskText) {
     try {
       const taskRef = doc(db, "tasks", id);
@@ -145,7 +145,7 @@ export default function Todo() {
   //   setTasks(remainingTasks);
   // }
 
-  // NEW FUNCTION
+  // DELETE API: NEW FUNCTION
   const handleDelete = async (id) => {
     try {
       const docRef = doc(db, "tasks", id);
@@ -183,7 +183,7 @@ export default function Todo() {
   //   setTasks(updatedTasks);
   // }
 
-  // NEW FUNCTION
+  // UPDATE API: NEW FUNCTION
   async function handleEditSubmit(id, newTaskText) {
     try {
       const taskRef = doc(db, "tasks", id);
