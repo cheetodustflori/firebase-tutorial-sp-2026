@@ -3,7 +3,7 @@ import ListItem from "./listItem";
 import { useState } from "react";
 import { nanoid } from "nanoid"; // this is just for generating random ids
 
-// Initial list of To-Do tasks -- hmm.... these are all hardcoded... maybe we can try retreiving this from a database? 
+// Initial list of To-Do tasks -- hmm.... these are all hardcoded... maybe we can try retrieving this from a database? 
 export default function Todo() {
   const tasks = [
     {
