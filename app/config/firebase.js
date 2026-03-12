@@ -1,5 +1,6 @@
 
 import { initializeApp } from "firebase/app"; // used to initialize new app in firebase
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD7KlpG5r7WzztoY8uFheZlYcQTkAg0kCo", // TO-DO
@@ -13,3 +14,4 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig); // variable that connects our project with fb services
+export const db = getFirestore(app);

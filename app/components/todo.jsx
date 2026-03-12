@@ -1,9 +1,12 @@
 "use client";
 import ListItem from "./listItem";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { nanoid } from "nanoid"; // this is just for generating random ids
 
-// Initial list of To-Do tasks -- hmm.... these are all hardcoded... maybe we can try retrieving this from a database? 
+import { collection, addDoc, doc, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
+import { db } from '../config/firebase'
+
+// Initial list of To-Do tasks -- hmm.... these are all hardcoded... maybe we can try retreiving this from a database? 
 export default function Todo() {
   const tasks = [
     {
@@ -45,24 +48,56 @@ export default function Todo() {
 
   // ----------------------------- STATES ----------------------------
 
-  // {TODO 1}: Change the tasks to hold a list
-  const [myTasks, setTasks] = useState(tasks); // array of our tasks
+  // const [myTasks, setTasks] = useState(tasks); // array of our tasks
+  const [myTasks, setTasks] = useState([]);
   const [input, setInput] = useState(""); // input for adding a to-do item
 
   // ----------------------------- A BUNCH OF FUNCTIONS  ----------------------------
 
-  // {TODO 2}: Add a GET api to listen in real-time for any db updates
+  // (GET API) Run this to update the tasksArray each time a add/update/edit change is made to the database because of the onSnapshot listener
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "tasks"), 
+    
+    (snapshot) => {
+      const tasksArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      setTasks(tasksArray);
+    });
+  
+    return () => unsubscribe();
+  }, []);
 
 
-  // {TODO 3}: Fix this function to be a POST api
   // FUNCTION: when you click "add to-do", it calls this function
-  function handleAddTodo() {
-    const newTask = { id: `todo-${nanoid()}`, task: input, status: false };
-    if (input.length > 0) {
-      setTasks([...myTasks, newTask]);
-      setInput("");
+
+  // OLD FUNCTION
+  // function handleAddTodo() {
+  //   const newTask = { id: `todo-${nanoid()}`, task: input, status: false };
+  //   if (input.length > 0) {
+  //     setTasks([...myTasks, newTask]);
+  //     setInput("");
+  //   }
+  // }
+
+  // POST API: NEW FUNCTION
+  const postData = async () => {
+    try {
+      const docRef = await addDoc(collection(db, 'tasks'), {
+        task: input,
+        status: false,
+        active: false,
+        editMode: false,
+        timestamp: new Date(),
+      });
+      console.log('Document written with ID: ', docRef.id);
+      setInput('');
+    } catch (e) {
+      console.error('Error adding document: ', e);
     }
-  }
+  };
 
   // FUNCTION: when you click on a TASK, it will open the edit + delete menu
   function handleTaskClick(id) {
@@ -77,46 +112,94 @@ export default function Todo() {
 
   // {TODO 6}: Fix this function to be a UPDATE api
   // FUNCTION: when you click the "completion circle", it will mark a task as complete/incomplete
-  function handleOnClick(id) {
-    const updatedTasks = myTasks.map((task) => {
-      if (id == task.id) {
-        return { ...task, status: !task.status };
-      }
-      return task;
-    });
-    setTasks(updatedTasks);
+
+  // OLD FUNCTION
+  // function handleOnClick(id) {
+  //   const updatedTasks = myTasks.map((task) => {
+  //     if (id == task.id) {
+  //       return { ...task, status: !task.status };
+  //     }
+  //     return task;
+  //   });
+  //   setTasks(updatedTasks);
+  // }
+
+  // UPDATE API: NEW FUNCTION
+  async function handleOnClick(id) {
+    try {
+      const task = myTasks.find((t) => t.id === id); // find the task
+  
+      const taskRef = doc(db, "tasks", id);
+  
+      await updateDoc(taskRef, {
+        status: !task.status
+      });
+  
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   }
 
-  // {TODO 5}: Fix this function to be a DELETE api
   // FUNCTION: when you click the DELETE button for a task, it deletes the task
-  function handleDelete(id) {
-    const remainingTasks = myTasks.filter((task) => id !== task.id);
-    setTasks(remainingTasks);
-  }
+
+  // OLD FUNCTION
+  // function handleDelete(id) {
+  //   const remainingTasks = myTasks.filter((task) => id !== task.id);
+  //   setTasks(remainingTasks);
+  // }
+
+  // DELETE API: NEW FUNCTION
+  const handleDelete = async (id) => {
+    try {
+      const docRef = doc(db, "tasks", id);
+      await deleteDoc(docRef);
+      console.log("Document successfully deleted from Firestore");
+    } catch (error) {
+      console.error("Error removing document:", error);
+    }
+  };
 
   // FUNCTION: when you click the EDIT button for a task, it displays a text input area to edit text
 
   function handleEditClick(id) {
     const updatedTasks = myTasks.map((task) => {
-      if (id == task.id) {
+      if (id === task.id) {
         return { ...task, editMode: !task.editMode };
       }
       return task;
     });
+  
     setTasks(updatedTasks);
   }
 
-  // {TODO 4}: Fix this function to be a UPDATE api
+
   // FUNCTION: when you have the edit menu open and click the SUBMIT button, it will update your task
-  function handleEditSubmit(id, newTaskText) {
-    const updatedTasks = myTasks.map((task) => {
-      if (id == task.id) {
-        return { ...task, task: newTaskText, editMode: !task.editMode };
-      }
-      console.log(newTaskText);
-      return task;
-    });
-    setTasks(updatedTasks);
+  
+  // OLD FUNCTION
+  // function handleEditSubmit(id, newTaskText) {
+  //   const updatedTasks = myTasks.map((task) => {
+  //     if (id == task.id) {
+  //       return { ...task, task: newTaskText, editMode: !task.editMode };
+  //     }
+  //     console.log(newTaskText);
+  //     return task;
+  //   });
+  //   setTasks(updatedTasks);
+  // }
+
+  // UPDATE API: NEW FUNCTION
+  async function handleEditSubmit(id, newTaskText) {
+    try {
+      const taskRef = doc(db, "tasks", id);
+  
+      await updateDoc(taskRef, {
+        task: newTaskText,
+        editMode: false
+      });
+  
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   }
 
 
@@ -156,7 +239,7 @@ export default function Todo() {
         />
         <button
           className="bg-pink-500 shadow-lg shadow-pink-500/50 text-white p-2 rounded-md active:relative active:top-0.5 cursor-pointer"
-          onClick={handleAddTodo}
+          onClick={postData}
         >
           Add To-Do
         </button>
