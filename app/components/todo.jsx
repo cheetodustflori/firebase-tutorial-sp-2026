@@ -124,12 +124,14 @@ export default function Todo() {
   // }
 
   // UPDATE API: NEW FUNCTION
-  async function handleOnClick(id, newTaskText) {
+  async function handleOnClick(id) {
     try {
+      const task = myTasks.find((t) => t.id === id); // find the task
+  
       const taskRef = doc(db, "tasks", id);
   
       await updateDoc(taskRef, {
-        status: !taskRef.status
+        status: !task.status
       });
   
     } catch (error) {
@@ -160,11 +162,12 @@ export default function Todo() {
 
   function handleEditClick(id) {
     const updatedTasks = myTasks.map((task) => {
-      if (id == task.id) {
+      if (id === task.id) {
         return { ...task, editMode: !task.editMode };
       }
       return task;
     });
+  
     setTasks(updatedTasks);
   }
 
