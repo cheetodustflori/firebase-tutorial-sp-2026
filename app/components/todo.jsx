@@ -45,11 +45,16 @@ export default function Todo() {
 
   // ----------------------------- STATES ----------------------------
 
+  // {TODO 1}: Change the tasks to hold a list
   const [myTasks, setTasks] = useState(tasks); // array of our tasks
   const [input, setInput] = useState(""); // input for adding a to-do item
 
   // ----------------------------- A BUNCH OF FUNCTIONS  ----------------------------
 
+  // {TODO 2}: Add a GET api to listen in real-time for any db updates
+
+
+  // {TODO 3}: Fix this function to be a POST api
   // FUNCTION: when you click "add to-do", it calls this function
   function handleAddTodo() {
     const newTask = { id: `todo-${nanoid()}`, task: input, status: false };
@@ -70,6 +75,7 @@ export default function Todo() {
     setTasks(updatedTasks);
   }
 
+  // {TODO 6}: Fix this function to be a UPDATE api
   // FUNCTION: when you click the "completion circle", it will mark a task as complete/incomplete
   function handleOnClick(id) {
     const updatedTasks = myTasks.map((task) => {
@@ -81,6 +87,7 @@ export default function Todo() {
     setTasks(updatedTasks);
   }
 
+  // {TODO 5}: Fix this function to be a DELETE api
   // FUNCTION: when you click the DELETE button for a task, it deletes the task
   function handleDelete(id) {
     const remainingTasks = myTasks.filter((task) => id !== task.id);
@@ -99,6 +106,7 @@ export default function Todo() {
     setTasks(updatedTasks);
   }
 
+  // {TODO 4}: Fix this function to be a UPDATE api
   // FUNCTION: when you have the edit menu open and click the SUBMIT button, it will update your task
   function handleEditSubmit(id, newTaskText) {
     const updatedTasks = myTasks.map((task) => {
